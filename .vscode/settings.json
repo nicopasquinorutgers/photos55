@@ -1,0 +1,15 @@
+{
+  "java.project.referencedLibraries": [
+    "C:/Users/nicop/Downloads/openjfx-21.0.6_windows-x64_bin-sdk/javafx-sdk-21.0.6/lib/*.jar"
+  ],
+  "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-21",
+      "path": "C:/Users/nicop/AppData/Roaming/Code/User/globalStorage/pleiades.java-extension-pack-jdk/java/21",
+      "default": true
+    }
+  ],
+  "java.configuration.updateBuildConfiguration": "interactive",
+  "java.debug.settings.forceBuildBeforeLaunch": true,
+  "java.compile.nullAnalysis.mode": "automatic"
+}
