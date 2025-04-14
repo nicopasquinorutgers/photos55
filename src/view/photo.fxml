@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="controller.PhotoController">
+    <top>
+        <Label text="Photo Viewer" style="-fx-font-size: 18px; -fx-padding: 10;" />
+    </top>
+    <center>
+        <VBox spacing="10" minHeight="500">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <ImageView fx:id="photoView" fitWidth="400" fitHeight="400" preserveRatio="true"/>
+            <Label fx:id="captionLabel"/>
+            <TextField fx:id="captionField" promptText="Edit caption here"/>
+            <HBox spacing="5">
+                <Button text="Save Caption" onAction="#handleSaveCaption"/>
+                <Button text="Remove Caption" onAction="#handleRemoveCaption"/>
+            </HBox>
+            <Label fx:id="dateLabel"/>
+        </VBox>
+    </center>
+    <right>
+        <VBox spacing="10">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Label text="Tags"/>
+            <ListView fx:id="tagListView" prefHeight="200"/>
+            <HBox spacing="5">
+                <ComboBox fx:id="tagKeyComboBox" promptText="Select Tag Type" />
+                <TextField fx:id="tagValueField" promptText="Value"/>
+            </HBox>
+            <HBox spacing="5">
+                <Button text="Location" onAction="#handlePresetTagLocation"/>
+                <Button text="Person" onAction="#handlePresetTagPerson"/>
+                <Button text="Event" onAction="#handlePresetTagEvent"/>
+            </HBox>
+            <HBox spacing="5">
+                <Button text="Add Tag" onAction="#handleAddTag"/>
+                <Button text="Remove Tag" onAction="#handleRemoveTag"/>
+            </HBox>
+        </VBox>
+    </right>
+    <bottom>
+        <HBox alignment="CENTER" spacing="10" minHeight="50" prefHeight="50" style="-fx-background-color: lightgrey;">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Button text="Previous" onAction="#handlePrevious"/>
+            <Button text="Next" onAction="#handleNext"/>
+            <Button text="Close" onAction="#handleClose"/>
+        </HBox>
+    </bottom>
+</BorderPane>

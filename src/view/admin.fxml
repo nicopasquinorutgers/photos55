@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="10" alignment="CENTER" xmlns:fx="http://javafx.com/fxml" fx:controller="controller.AdminController">
+    <Label text="Admin Panel" style="-fx-font-size: 18px;" />
+    <HBox spacing="10">
+        <Button text="List Users" onAction="#handleListUsers" />
+        <Button text="Create New User" onAction="#handleCreateUser" />
+        <Button text="Delete User" onAction="#handleDeleteUser" />
+    </HBox>
+    <ListView fx:id="userListView" prefHeight="200" prefWidth="200" />
+    <Button text="Logout" onAction="#handleLogout" />
+</VBox>
