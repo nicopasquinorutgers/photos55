@@ -40,20 +40,20 @@ public class PhotoController {
     @FXML private TextField tagValueField;
 
     private Photo photo;
-    private List<Photo> photoList;
-    private int currentIndex;
+    private List<Photo> photoList;  // List for slideshow navigation
+    private int currentIndex;       // Current index in the photo list
 
     /**
-     * Initialization method that sets preset tag types.
+     * Initializes the controller by setting preset tag types.
      */
     @FXML
     private void initialize() {
-        tagKeyComboBox.setItems(FXCollections.observableArrayList("location", "person", "event"));
+        tagKeyComboBox.setItems(FXCollections.observableArrayList("Location", "Person", "Event"));
     }
 
     /**
      * Sets the current photo and updates the view.
-     * 
+     *
      * @param photo the photo to display.
      */
     public void setPhoto(Photo photo) {
@@ -63,7 +63,7 @@ public class PhotoController {
     
     /**
      * Sets the list of photos and the current index, then displays the photo at that index.
-     * 
+     *
      * @param photos the list of photos in the album.
      * @param index the current photo index.
      */
@@ -116,11 +116,24 @@ public class PhotoController {
             showAlert("Tag Error", "Value cannot be empty.");
             return;
         }
+
+        // Enforce only one location tag per photo.
+        if (key.equalsIgnoreCase("location")) {
+        // Check if a location tag already exists.
+            Optional<Tag> existingLocationTag = photo.getTags().stream().filter(tag -> tag.getKey().equalsIgnoreCase("location")) .findFirst();
+            if (existingLocationTag.isPresent()) {
+                // Option: Remove the existing location tag (effectively updating it).
+                photo.removeTag(existingLocationTag.get());
+            }
+        }
+
+        // Add the new tag
         photo.addTag(new Tag(key, value));
         refreshTags();
         tagKeyComboBox.getSelectionModel().clearSelection();
         tagValueField.clear();
     }
+
     
     /**
      * Handles removing the selected tag from the current photo.
@@ -158,23 +171,29 @@ public class PhotoController {
     }
     
     /**
-     * Navigates to the previous photo in the album.
+     * Navigates to the previous photo in the album and updates the stage layout.
      */
     @FXML
     private void handlePrevious() {
         if (photoList == null || photoList.isEmpty()) return;
         currentIndex = (currentIndex - 1 + photoList.size()) % photoList.size();
         setPhoto(photoList.get(currentIndex));
+        // Force layout update to ensure navigation buttons remain visible.
+        Stage stage = (Stage) photoView.getScene().getWindow();
+        stage.sizeToScene();
     }
 
     /**
-     * Navigates to the next photo in the album.
+     * Navigates to the next photo in the album and updates the stage layout.
      */
     @FXML
     private void handleNext() {
         if (photoList == null || photoList.isEmpty()) return;
         currentIndex = (currentIndex + 1) % photoList.size();
         setPhoto(photoList.get(currentIndex));
+        // Force layout update to ensure navigation buttons remain visible.
+        Stage stage = (Stage) photoView.getScene().getWindow();
+        stage.sizeToScene();
     }
 
     /**
@@ -188,9 +207,9 @@ public class PhotoController {
     
     /**
      * Utility method to display an alert with a title and message.
-     * 
+     *
      * @param title the alert title.
-     * @param content the content message.
+     * @param content the alert message content.
      */
     private void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
