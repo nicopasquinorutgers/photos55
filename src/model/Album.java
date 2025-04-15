@@ -9,7 +9,7 @@ import java.util.List;
  * An album has a name and a list of Photo objects.
  * This class implements Serializable so that album data can be saved and loaded.
  * 
- * @author Sara Annamraju
+ * @author Nico Pasquino / Sara Annamraju
  * @version 1.0
  */
 public class Album implements Serializable {
@@ -55,12 +55,21 @@ public class Album implements Serializable {
     }
 
     /**
-     * Adds a photo to the album.
+     * Adds a photo to the album if a photo with the same file path is not already present.
+     * Duplicate photos (based on file path) are not allowed.
      * 
      * @param photo the Photo to add
      */
-    public void addPhoto(Photo photo) {
+    public boolean addPhoto(Photo photo) {
+        // Check each photo already in the album. If one has the same file path, do not add the duplicate.
+        for (Photo p : photos) {
+            if (p.getFilePath().equalsIgnoreCase(photo.getFilePath())) {
+                // Duplicate found: do not add
+                return false;
+            }
+        }
         photos.add(photo);
+        return true;
     }
 
     /**

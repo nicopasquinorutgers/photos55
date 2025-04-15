@@ -18,6 +18,7 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import model.Photo;
 import model.Tag;
+import model.User;
 
 /**
  * Controller for the photo detail view.
@@ -42,13 +43,16 @@ public class PhotoController {
     private Photo photo;
     private List<Photo> photoList;  // List for slideshow navigation
     private int currentIndex;       // Current index in the photo list
+    private User currentUser;       // The current logged-in user
 
     /**
-     * Initializes the controller by setting preset tag types.
+     * Sets the current user and populates the tag type ComboBox with the user's custom tag types.
+     * 
+     * @param user the current user.
      */
-    @FXML
-    private void initialize() {
-        tagKeyComboBox.setItems(FXCollections.observableArrayList("Location", "Person", "Event"));
+    public void setUser(User user) {
+        this.currentUser = user;
+        tagKeyComboBox.setItems(FXCollections.observableArrayList(user.getCustomTagTypes()));
     }
 
     /**
@@ -103,6 +107,7 @@ public class PhotoController {
     
     /**
      * Handles adding a tag to the current photo.
+     * For the "location" tag, it enforces only one such tag per photo.
      */
     @FXML
     private void handleAddTag() {
@@ -116,24 +121,20 @@ public class PhotoController {
             showAlert("Tag Error", "Value cannot be empty.");
             return;
         }
-
         // Enforce only one location tag per photo.
         if (key.equalsIgnoreCase("location")) {
-        // Check if a location tag already exists.
-            Optional<Tag> existingLocationTag = photo.getTags().stream().filter(tag -> tag.getKey().equalsIgnoreCase("location")) .findFirst();
+            Optional<Tag> existingLocationTag = photo.getTags().stream()
+                    .filter(tag -> tag.getKey().equalsIgnoreCase("location"))
+                    .findFirst();
             if (existingLocationTag.isPresent()) {
-                // Option: Remove the existing location tag (effectively updating it).
                 photo.removeTag(existingLocationTag.get());
             }
         }
-
-        // Add the new tag
         photo.addTag(new Tag(key, value));
         refreshTags();
         tagKeyComboBox.getSelectionModel().clearSelection();
         tagValueField.clear();
     }
-
     
     /**
      * Handles removing the selected tag from the current photo.
@@ -171,27 +172,25 @@ public class PhotoController {
     }
     
     /**
-     * Navigates to the previous photo in the album and updates the stage layout.
+     * Navigates to the previous photo in the album and forces a layout update.
      */
     @FXML
     private void handlePrevious() {
         if (photoList == null || photoList.isEmpty()) return;
         currentIndex = (currentIndex - 1 + photoList.size()) % photoList.size();
         setPhoto(photoList.get(currentIndex));
-        // Force layout update to ensure navigation buttons remain visible.
         Stage stage = (Stage) photoView.getScene().getWindow();
         stage.sizeToScene();
     }
 
     /**
-     * Navigates to the next photo in the album and updates the stage layout.
+     * Navigates to the next photo in the album and forces a layout update.
      */
     @FXML
     private void handleNext() {
         if (photoList == null || photoList.isEmpty()) return;
         currentIndex = (currentIndex + 1) % photoList.size();
         setPhoto(photoList.get(currentIndex));
-        // Force layout update to ensure navigation buttons remain visible.
         Stage stage = (Stage) photoView.getScene().getWindow();
         stage.sizeToScene();
     }
@@ -243,7 +242,8 @@ public class PhotoController {
     }
     
     /**
-     * Allows the user to add a custom tag type to the preset list.
+     * Allows the user to add a custom tag type to their personal preset list.
+     * The new tag type is saved in the current user's data so that it persists across photo details.
      */
     @FXML
     private void handleAddTagType() {
@@ -254,10 +254,19 @@ public class PhotoController {
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
             String newTagType = result.get().trim();
-            if (!newTagType.isEmpty() && !tagKeyComboBox.getItems().contains(newTagType)) {
-                tagKeyComboBox.getItems().add(newTagType);
+            if (!newTagType.isEmpty()) {
+                if (currentUser != null) {
+                    boolean added = currentUser.addCustomTagType(newTagType);
+                    if (added) {
+                        tagKeyComboBox.setItems(FXCollections.observableArrayList(currentUser.getCustomTagTypes()));
+                    } else {
+                        showAlert("Error", "Tag type already exists.");
+                    }
+                } else {
+                    showAlert("Error", "User not set. Cannot add tag type.");
+                }
             } else {
-                showAlert("Error", "Invalid or duplicate tag type.");
+                showAlert("Error", "Invalid tag type.");
             }
         }
     }

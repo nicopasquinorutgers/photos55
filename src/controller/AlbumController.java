@@ -58,7 +58,6 @@ public class AlbumController {
             if (event.getClickCount() == 2 && currentUser != null) {
                 String selectedAlbumItem = albumListView.getSelectionModel().getSelectedItem();
                 if (selectedAlbumItem != null) {
-                    // Extract the album name from a string like "AlbumName (N photos, yyyy-MM-dd to yyyy-MM-dd)"
                     String selectedAlbumName = selectedAlbumItem.split(" \\(")[0];
                     selectedAlbum = currentUser.getAlbums().stream()
                             .filter(album -> album.getName().equals(selectedAlbumName))
@@ -80,7 +79,7 @@ public class AlbumController {
     /**
      * Sets the current user and refreshes the album list.
      * 
-     * @param user the logged-in user
+     * @param user the logged-in user.
      */
     public void setUser(User user) {
         this.currentUser = user;
@@ -270,7 +269,7 @@ public class AlbumController {
      * Helper method to populate the currently selected album with duplicate copies 
      * of a sample photo for scalability testing.
      * 
-     * @param count the number of copies to add
+     * @param count the number of copies to add.
      */
     private void populateTestAlbum(int count) {
         if (selectedAlbum == null) {
@@ -454,6 +453,7 @@ public class AlbumController {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/photo.fxml"));
                 Parent root = loader.load();
                 PhotoController photoController = loader.getController();
+                photoController.setUser(currentUser);  // Pass the current user so that user-specific tag types are used.
                 int index = selectedAlbum.getPhotos().indexOf(selectedPhoto);
                 photoController.setPhotoData(selectedAlbum.getPhotos(), index);
                 Stage stage = new Stage();
